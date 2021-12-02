@@ -1,0 +1,20 @@
+The better answer to this question would specify what
+a solution to the problem looks like.
+
+Given an input vector V, we could say what must be true
+about the relationship between V and the result of running
+our algorithm F.
+
+For example, if our algorithm were the identity function,
+we could say:
+
+    F V = V
+
+In our case, we want to say that the result F(V) is related to
+the data contained in V itself.
+
+    Π(N:Nat) 
+    Π(M:Nat)
+    Π(V:Vec M Nat)
+    M > N →
+      F N V = FoldPairs (Map Sum (Windows N V)) 0

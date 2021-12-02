@@ -31,31 +31,17 @@ function increases(width, xs) {
     return 0
 
   var increases = 0
+  var ub = sumRange(0, width, xs)
+  var lb
   for (var i = minIndex; i < maxIndex; i++) {
-    if (sumRange(i, width, xs) > sumRange(i-1, width, xs)) {
+    lb = ub
+    ub = sumRange(i, width, xs)
+    if (ub > lb) {
       increases += 1
     }
   }
   return increases
 }
 
-const example = [
-  199,
-  200,
-  208,
-  210,
-  200,
-  207,
-  240,
-  269,
-  260,
-  263
-]
-
 console.log(increases(1, depths))
-console.log(increases(2, depths))
 console.log(increases(3, depths))
-
-console.log(increases(1, example))
-console.log(increases(2, example))
-console.log(increases(3, example))
