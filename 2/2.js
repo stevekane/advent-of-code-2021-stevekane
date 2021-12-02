@@ -1,16 +1,10 @@
 const fs = require("fs")
 
 function inputs(filePath) {
-  const parseOptions = {
-    encoding: "utf8",
-    flag: "r"
-  }
-  const paramDelimiter = " "
-  const commandDelimiter = "\r\n"
   const commands = 
-    fs.readFileSync(filePath, parseOptions)
-    .split(commandDelimiter)
-    .map(n => n.split(paramDelimiter))
+    fs.readFileSync(filePath, { encoding: "utf8", flag: "r" })
+    .split("\r\n")
+    .map(n => n.split(" "))
     .map(n => [ n[0], Number(n[1]) ])
   return commands
 }
