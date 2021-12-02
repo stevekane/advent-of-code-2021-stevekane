@@ -1,12 +1,10 @@
 const fs = require("fs")
 
 function inputs(filePath) {
-  const commands = 
-    fs.readFileSync(filePath, { encoding: "utf8", flag: "r" })
+  return fs.readFileSync(filePath, { encoding: "utf8", flag: "r" })
     .split("\r\n")
     .map(n => n.split(" "))
     .map(n => [ n[0], Number(n[1]) ])
-  return commands
 }
 
 function destination([ position, depth ], [ direction, magnitude ]) {
