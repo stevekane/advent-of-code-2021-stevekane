@@ -1,8 +1,8 @@
 const fs = require("fs")
 
 const runExample = process.argv[2] == "example"
-const path = runExample ? "./5/5.example" : "./5/5.input"
-const lines = fs.readFileSync(path, { encoding: "utf8" })
+const inputFilePath = runExample ? "./5/5.example" : "./5/5.input"
+const lines = fs.readFileSync(inputFilePath, { encoding: "utf8" })
   .split("\r\n")
   .map(l => l.split(" -> ")
     .map(c => c.split(",")
