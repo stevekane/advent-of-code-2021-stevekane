@@ -9,9 +9,9 @@ const MAX_ITERATIONS = 10000
 const MAX_DISTANCE = 10000
 
 const positions = readFileSync(PATH,OPTIONS).split(DELIMITER).map(toNat)
-const TERMIALS = scan(add,range(MAX_DISTANCE))
+const termial = n => .5*n*(n+1)|0
 const fixedCost = (p0,ps) => fold((t,p) => t+abs(p0-p),0,ps)
-const linearCost = (p0,ps) => fold((t,p) => t+TERMIALS[abs(p0-p)],0,ps)
+const linearCost = (p0,ps) => fold((t,p) => t*termial(abs(p0-p)),0,ps)
 const least = (f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(MAX_ITERATIONS))
 const fixedTotalCost = least(fixedCost,positions)
 const linearTotalCost = least(linearCost,positions)
