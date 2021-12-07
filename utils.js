@@ -1,4 +1,8 @@
-module.exports = { toNat, add, fold, map, scan, range }
+module.exports = { log, toNat, add, fold, map, scan, range }
+
+function log(n) {
+  return console.log(n)
+}
 
 function toNat(n) {
   return parseInt(n)
