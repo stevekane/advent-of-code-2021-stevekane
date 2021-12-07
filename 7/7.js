@@ -1,19 +1,19 @@
-const {readFileSync}              = require("fs")
+const {readFileSync} = require("fs")
 const {fold,scan,range,toNat,add} = require("../utils")
-const {min,abs}                   = Math 
+const {min,abs} = Math 
 
-const PATH            = process.argv[2]
-const OPTIONS         = {encoding: "utf8"}
-const DELIMITER       = ","
-const positions       = readFileSync(PATH,OPTIONS).split(DELIMITER).map(toNat)
+const PATH = process.argv[2]
+const OPTIONS = {encoding: "utf8"}
+const DELIMITER = ","
+const MAX_ITERATIONS = 10000
+const MAX_DISTANCE = 10000
 
-const MAX_ITERATIONS  = 10000
-const MAX_DISTANCE    = 10000
-const TERMIALS        = scan(add,range(MAX_DISTANCE))
-const fixedCost       = (p0,ps) => fold((t,p) => t+abs(p0-p),0,ps)
-const linearCost      = (p0,ps) => fold((t,p) => t+TERMIALS[abs(p0-p)],0,ps)
-const least           = (f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(MAX_ITERATIONS))
-const fixedTotalCost  = least(fixedCost,positions)
+const positions = readFileSync(PATH,OPTIONS).split(DELIMITER).map(toNat)
+const TERMIALS = scan(add,range(MAX_DISTANCE))
+const fixedCost = (p0,ps) => fold((t,p) => t+abs(p0-p),0,ps)
+const linearCost = (p0,ps) => fold((t,p) => t+TERMIALS[abs(p0-p)],0,ps)
+const least = (f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(MAX_ITERATIONS))
+const fixedTotalCost = least(fixedCost,positions)
 const linearTotalCost = least(linearCost,positions)
 
 console.log(fixedTotalCost)  // 37 per example
