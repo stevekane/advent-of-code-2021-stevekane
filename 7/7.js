@@ -1,28 +1,20 @@
-const {min,abs} = Math
-const example = require("fs").readFileSync(process.argv[2],{encoding:"utf8"})
-  .split(",")
-  .map(n => parseInt(n))
-const termial = n => {
-  let t = 0
-  for (let i = 1; i <= n; i++) {
-    t+=i
-  }
-  return t
-}
-const fixedCost = (p0,crabs) => crabs.reduce((total,p) => total+abs(p0-p),0)
-const linearCost = (p0,crabs) => crabs.reduce((total,p) => total+termial(abs(p0-p)),0)
-const searchRaw = (costFn,crabs) => {
-  let i = 0
-  let lowestCost = 1000000000000
+const {readFileSync}              = require("fs")
+const {fold,scan,range,toNat,add} = require("../utils")
+const {min,abs}                   = Math 
 
-  while(i < 10000) {
-    lowestCost = min(lowestCost, costFn(i,crabs))
-    i++
-  }
-  return lowestCost
-}
-const fixedTotalCost = searchRaw(fixedCost,example)
-const linearTotalCost = searchRaw(linearCost,example)
+const PATH            = process.argv[2]
+const OPTIONS         = {encoding: "utf8"}
+const DELIMITER       = ","
+const positions       = readFileSync(PATH,OPTIONS).split(DELIMITER).map(toNat)
 
-console.log(fixedTotalCost)
-console.log(linearTotalCost)
+const MAX_ITERATIONS  = 10000
+const MAX_DISTANCE    = 10000
+const TERMIALS        = scan(add,range(MAX_DISTANCE))
+const fixedCost       = (p0,ps) => fold((t,p) => t+abs(p0-p),0,ps)
+const linearCost      = (p0,ps) => fold((t,p) => t+TERMIALS[abs(p0-p)],0,ps)
+const least           = (f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(MAX_ITERATIONS))
+const fixedTotalCost  = least(fixedCost,positions)
+const linearTotalCost = least(linearCost,positions)
+
+console.log(fixedTotalCost)  // 37 per example
+console.log(linearTotalCost) // 168 per example
