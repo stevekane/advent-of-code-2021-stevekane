@@ -16,10 +16,5 @@ const linearTotalCost = least(linearCost,positions)
 
 log(fixedTotalCost)  // 37 per example
 log(linearTotalCost) // 168 per example
-
-log(fold((ps,p) => readFileSync(process.argv[2],{encoding:"utf8"}),p==","?ps:ps.concat(toNat(p))))
-
-log([
-  ((f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(fold(max,0,ps))))((p0,ps) => fold((t,p) => t+abs(p0-p),0,ps),positions), 
-  ((f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(fold(max,0,ps))))((p0,ps) => fold((t,p) => t+floor(.5*abs(p0-p)*(abs(p0-p)+1)),0,ps),positions)
-]) // [37,168]
+log((n => ([((f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(fold(max,0,ps))))((p0,ps) => fold((t,p) => t+abs(p0-p),0,ps),positions), ((f,ps) => fold((c,p) => min(c,f(p,ps)),f(0,ps),range(fold(max,0,ps))))((p0,ps) => fold((t,p) => t+floor(.5*abs(p0-p)*(abs(p0-p)+1)),0,ps),positions)
+]))(fold(([n,ps],p) => p === "," ? ["",[...ps,toNat(n)]] : [n+p,ps],["",[]],readFileSync(process.argv[2],{encoding:"utf8"})+",")[1])) // [37,168]
