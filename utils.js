@@ -1,8 +1,8 @@
 module.exports = { 
   log, 
   toNat, 
-  isSuperset, difference, symmetricDifference, union, 
-  permutationOf,
+  isSuperset, difference, symmetricDifference, union, equal,
+  contains,
   add, 
   sum, 
   fold, map, scan, range 
@@ -53,12 +53,22 @@ function union(a,b) {
   return u
 }
 
-function permutationOf(xs,ys) {
-  if (xs.length != ys.length)
+function contains(a,xs) {
+  for (let x of xs) {
+    if (x == a) {
+      return true
+    }
+  }
+  return false
+}
+
+// set equality by elements
+function equal(xs,ys) {
+  if (xs.size != ys.size)
     return false
 
   for (let x of xs) {
-    if (ys.indexOf(x) < 0) {
+    if (!contains(x,ys)) {
       return false
     }
   }
