@@ -6,12 +6,11 @@ function renderSegments(segments) {
   const buffer = new Array(width * height).fill(" ")
 
   for (var i = 0; i < segments.length; i++) {
-    let segment = segments[i]
+    let on = segments[i]
     let { indices, letter } = renderSettings[i]
-    for (var j = 0; j < segments[i].length; j++) {
-      let pixel = segment[j]
+    for (var j = 0; j < indices.length; j++) {
       let index = indices[j]
-      buffer[index] = pixel ? letter : " "
+      buffer[index] = on ? letter : " "
     }
   }
   for (var i = 0; i < height; i++) {
@@ -29,14 +28,6 @@ const renderSettings = [
   { indices: [33,40], letter: "f" },
   { indices: [43,44,45,46], letter: "g" },
 ]
-const pixels = [
-  [1,1,1,1],
-  [1,1],
-  [1,1],
-  [1,1,1,1],
-  [1,1],
-  [1,1],
-  [1,1,1,1]
-]
+const pixels = [ 1,1,1,1,1,1,1,1 ]
 
 console.log(renderSegments(pixels))
