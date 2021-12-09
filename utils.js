@@ -1,6 +1,6 @@
 module.exports = { 
   log, 
-  toNat, 
+  toNat, toSet,
   isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, 
@@ -14,6 +14,10 @@ function log(n) {
 
 function toNat(n) {
   return parseInt(n)
+}
+
+function toSet(xs) {
+  return new Set(xs)
 }
 
 function isSuperset(set,subset) {

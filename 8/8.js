@@ -1,27 +1,27 @@
 const { readFileSync } = require("fs")
-const { log, toNat, add, isSuperset, difference, equal } = require("../utils")
+const { log, toNat, toSet, add, isSuperset, difference, equal } = require("../utils")
 
 function correctDigits([ signals, outputs ]) {
-  const one       = new Set(signals.find(s => s.length === 2))
-  const seven     = new Set(signals.find(s => s.length === 3))
-  const four      = new Set(signals.find(s => s.length === 4))
-  const eight     = new Set(signals.find(s => s.length === 7))
-  const fives     = signals.filter(s => s.length === 5).map(s => new Set(s)) // 2 3 5
-  const sixes     = signals.filter(s => s.length === 6).map(s => new Set(s)) // 0 6 9
-  const bd        = difference(four,one)
-  const three     = fives.find(l => isSuperset(l,one)) // only 3 contains one
-  const zero      = sixes.find(l => !isSuperset(l,bd)) // only 0 does not contain both b and d
-  const nine      = sixes.filter(f => f != zero).find(f => isSuperset(f,one))
-  const six       = sixes.find(f => f != zero && f != nine)
-  const d         = difference(eight,zero)
-  const b         = difference(bd,d)
-  const five      = fives.filter(f => f != three).find(f => isSuperset(f,b)) 
-  const two       = fives.find(f => f != three && f != five)
-  const digits    = [ zero, one, two, three, four, five, six, seven, eight, nine ]
+  const one        = toSet(signals.find(s => s.length === 2))
+  const seven      = toSet(signals.find(s => s.length === 3))
+  const four       = toSet(signals.find(s => s.length === 4))
+  const eight      = toSet(signals.find(s => s.length === 7))
+  const fives      = signals.filter(s => s.length === 5).map(toSet)
+  const sixes      = signals.filter(s => s.length === 6).map(toSet)
+  const bd         = difference(four,one)
+  const three      = fives.find(l => isSuperset(l,one))
+  const zero       = sixes.find(l => !isSuperset(l,bd))
+  const nine       = sixes.filter(f => f != zero).find(f => isSuperset(f,one))
+  const six        = sixes.find(f => f != zero && f != nine)
+  const d          = difference(eight,zero)
+  const b          = difference(bd,d)
+  const five       = fives.filter(f => f != three).find(f => isSuperset(f,b)) 
+  const two        = fives.find(f => f != three && f != five)
+  const patterns   = [ zero, one, two, three, four, five, six, seven, eight, nine ]
+  const outputSets = outputs.map(toSet)
+  const digits     = outputSets.reduce((s,d) => s+patterns.findIndex(s => equal(d,s)),"")
 
-  return outputs
-    .map(d => new Set(d))
-    .reduce((s,d) => s+digits.findIndex(s => equal(d,s)),"")
+  return digits
 }
 
 const path = process.argv[2]
