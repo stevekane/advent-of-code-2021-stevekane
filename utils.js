@@ -3,8 +3,8 @@ module.exports = {
   toNat, toSet, toArray,
   isSuperset, difference, symmetricDifference, union, equal,
   contains,
-  add, 
-  sum, 
+  add, mul, sub,
+  sum, product,
   fold, map, scan, range 
 }
 
@@ -87,8 +87,20 @@ function add(a,b) {
   return a + b
 }
 
+function mul(a,b) {
+  return a * b
+}
+
+function sub(a,b) {
+  return a - b
+}
+
 function sum(xs) {
   return fold(add,0,xs)
+}
+
+function product(xs) {
+  return fold(mul,1,xs)
 }
 
 function fold(f,y0,xs) {
