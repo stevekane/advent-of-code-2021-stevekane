@@ -1,10 +1,9 @@
-const { toNat, product, sub } = require("../utils")
+const { toNat, range, cartesianProduct, product, toArray } = require("../utils")
 const { readFileSync } = require("fs")
-const { min } = Math
-const input = readFileSync(process.argv[2], {encoding:"utf8"})
-  .split("\r\n")
-  .map(r => [...r].map(toNat))
-const at = (i,[x,y]) => i[y][x]
+
+function at(i,[x,y]) {
+  return i[y][x]
+}
 
 function lowpoint(i,w,h,[x,y]) {
   let c         = at(i,[x,y])
@@ -16,72 +15,41 @@ function lowpoint(i,w,h,[x,y]) {
   return !(flowleft || flowright || flowup || flowdown)
 }
 
-function flows(i,w,h,[x,y]) {
-  let c         = at(i,[x,y])
-  let flowleft  = x-1 >= 0 && at(i,[x-1,y]) < c
-  let flowright = x+1 <  w && at(i,[x+1,y]) < c
-  let flowup    = y-1 >= 0 && at(i,[x,y-1]) < c
-  let flowdown  = y+1 <  h && at(i,[x,y+1]) < c
-  let ends      = []
+function fill(i,w,h,pt) {
+  let stack = [pt]
+  let set = new Set
+  let checked = new Set
 
-  if (!flowleft && !flowright && !flowup && !flowdown) {
-    ends.push([x,y])
-  } else {
-    if (flowleft)  ends.push(...flows(i,w,h,[x-1,y],ends))
-    if (flowright) ends.push(...flows(i,w,h,[x+1,y],ends))
-    if (flowup)    ends.push(...flows(i,w,h,[x,y-1],ends))
-    if (flowdown)  ends.push(...flows(i,w,h,[x,y+1],ends))
-  }
-  return ends
-}
+  while (stack.length) {
+    let item = stack.pop()
+    let [x,y] = item
+    let itemhash = JSON.stringify(item)
 
-function flowsTo(i,w,h,pt,target) {
-  for (let end of flows(i,w,h,pt)) {
-    if (!(end[0] === target[0] && end[1] === target[1])) {
-      return false
+    if (checked.has(itemhash)) 
+      continue
+
+    checked.add(itemhash)
+    if (x >= 0 && x < w && y >= 0 && y < h && at(i,item) < 9) {
+      set.add(itemhash)
+      stack.push([x-1,y])
+      stack.push([x+1,y])
+      stack.push([x,y-1])
+      stack.push([x,y+1])
     }
   }
-  return true
+  return set
 }
 
-function basinTo(i,w,h,pt,target) {
-  let [x,y]     = pt
-  let c         = at(i,pt)
-  let fromleft  = x-1 >= 0 && c < at(i,[x-1,y])
-  let fromright = x+1 <  w && c < at(i,[x+1,y])
-  let fromup    = y-1 >= 0 && c < at(i,[x,y-1])
-  let fromdown  = y+1 <  h && c < at(i,[x,y+1])
-  let basin = []
+const path = process.argv[2]
+const opts = {encoding:"utf8"}
+const input = readFileSync(path,opts).split("\r\n").map(r => toArray(r).map(toNat))
+const h = input.length
+const w = input[0].length
+const pts = cartesianProduct([...range(w)],[...range(h)])
+const lowpoints = pts.filter(pt => lowpoint(input,w,h,pt))
+const danger = lowpoints.reduce((r,pt) => r+1+at(input,pt),0)
+const basins = lowpoints.map(pt => fill(input,w,h,pt))
+const prodTop3Basins = product(basins.map(b => b.size).sort((a,b) => b-a).slice(0,3))
 
-  if (c !== 9 && flowsTo(i,w,h,pt,target)) {
-    basin.push(pt)
-    if (fromleft)  basin.push(...basinTo(i,w,h,[x-1,y],target))
-    if (fromright) basin.push(...basinTo(i,w,h,[x+1,y],target))
-    if (fromup)    basin.push(...basinTo(i,w,h,[x,y-1],target))
-    if (fromdown)  basin.push(...basinTo(i,w,h,[x,y+1],target))
-  }
-  return basin
-}
-
-let r = 0
-let h = input.length
-let bs = []
-for (let j = 0; j < h; j++) {
-  let w = input[j].length
-  for (let i = 0; i < w; i++) {
-    let pt = [i,j]
-
-    if (lowpoint(input,w,h,pt)) {
-      bs.push(basinTo(input,w,h,pt,pt))
-      r += 1+at(input,pt)
-    }
-  }
-}
-
-const basinSizes = 
-  bs.map(b => (new Set(b.map(p => JSON.stringify(p))).size))
-  .sort((a,b) => b - a)
-  .slice(0,3)
-
-console.log(basinSizes)
-console.log(product(basinSizes))
+console.log(danger)
+console.log(prodTop3Basins)

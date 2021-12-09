@@ -1,7 +1,7 @@
 module.exports = { 
   log, 
   toNat, toSet, toArray,
-  isSuperset, difference, symmetricDifference, union, equal,
+  cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, mul, sub,
   sum, product,
@@ -22,6 +22,16 @@ function toSet(xs) {
 
 function toArray(xs) {
   return [ ...xs ]
+}
+
+function cartesianProduct(xs,ys) {
+  let p = []
+  for (let x of xs) {
+    for (let y of ys) {
+      p.push([x,y])
+    }
+  }
+  return p 
 }
 
 function isSuperset(set,subset) {
