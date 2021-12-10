@@ -47,9 +47,9 @@ const h = input.length
 const w = input[0].length
 const pts = cartesianProduct([...range(w)],[...range(h)])
 const lowpoints = pts.filter(pt => lowpoint(input,w,h,pt))
-const danger = lowpoints.reduce((r,pt) => r+1+at(input,pt),0)
 const basins = lowpoints.map(pt => fill(input,w,h,pt))
-const prodTop3Basins = product(basins.map(b => b.size).sort((a,b) => b-a).slice(0,3))
+const pt1 = lowpoints.reduce((r,pt) => r+1+at(input,pt),0)
+const pt2 = product(basins.map(b => b.size).sort((a,b) => b-a).slice(0,3))
 
-console.log(danger)
-console.log(prodTop3Basins)
+console.log(pt1) // 15
+console.log(pt2) // 1134
