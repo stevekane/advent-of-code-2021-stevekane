@@ -1,11 +1,17 @@
+const fs = require("fs")
+
 module.exports = { 
-  log, 
+  readLines, log, 
   toNat, toSet, toArray,
   cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, mul, sub,
   sum, product,
   fold, map, scan, range 
+}
+
+function readLines(path) {
+  return fs.readFileSync(path, { encoding: "utf8" }).split("\r\n")
 }
 
 function log(n) {
