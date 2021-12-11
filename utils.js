@@ -3,6 +3,7 @@ const fs = require("fs")
 module.exports = { 
   readLines, log, 
   toNat, toSet, toArray,
+  transpose,
   cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, mul, sub,
@@ -11,7 +12,8 @@ module.exports = {
 }
 
 function readLines(path) {
-  return fs.readFileSync(path, { encoding: "utf8" }).split("\r\n")
+  return fs.readFileSync(path, { encoding: "utf8" })
+    .split("\r\n")
 }
 
 function log(n) {
@@ -28,6 +30,27 @@ function toSet(xs) {
 
 function toArray(xs) {
   return [ ...xs ]
+}
+
+function transpose(input) {
+  let width = input.length
+  let height = input[0].length
+  let output = []
+
+  // initialize the transposed array
+  for (var i = 0; i < width; i++) {
+    output.push([])
+    for (var j = 0; j < height; j++) {
+      output[i].push(0)  
+    }
+  }
+  // populate it from the input
+  for (var j = 0; j < width; j++) {
+    for (var i = 0; i < height; i++) {
+      output[i][j] = input[j][i]
+    }
+  }
+  return output
 }
 
 function cartesianProduct(xs,ys) {
