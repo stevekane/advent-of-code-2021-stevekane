@@ -32,12 +32,15 @@ let sections =
 let dots = 
   sections[0]
   .split("\r\n")
-  .map(l => l.split(",").map(toNat))
+  .map(l => l
+    .split(",")
+    .map(toNat))
 let folds =
   sections[1]
   .split("\r\n")
-  .map(l => l.replace("fold along ",""))
-  .map(l => l.split("="))
+  .map(l => l
+    .replace("fold along ","")
+    .split("="))
   .map(eq => [eq[0],toNat(eq[1])])
 
 console.log(count(uniques(foldPaper(dots,folds[0]))))
