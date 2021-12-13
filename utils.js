@@ -3,12 +3,13 @@ const fs = require("fs")
 module.exports = { 
   readLines, log, 
   hash, unhash,
+  Array2D,
   toNat, toSet, toArray, toGraph,
   transpose,
   cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, mul, sub,
-  sum, product, histogram,
+  sum, product, histogram, uniques, count,
   forAll, thereExists,
   fold, map, scan, range 
 }
@@ -28,6 +29,17 @@ function hash(d) {
 
 function unhash(d) {
   return JSON.parse(d)
+}
+
+function Array2D(width,height,initialValue) {
+  let arr = []
+  for (let j = 0; j < height; j++) {
+    arr.push([])
+    for (let i = 0; i < width; i++) {
+      arr[j].push(initialValue)
+    }
+  }
+  return arr
 }
 
 function toNat(n) {
@@ -134,6 +146,10 @@ function contains(a,xs) {
   return false
 }
 
+function count(xs) {
+  return xs.length || xs.size
+}
+
 // set equality by elements
 function equal(xs,ys) {
   if (xs.size != ys.size)
@@ -174,6 +190,10 @@ function histogram(xs) {
     m.set(x,(m.get(x) || 0) + 1)
   }
   return m
+}
+
+function uniques(xs) {
+  return map(unhash,new Set(map(hash,xs)))
 }
 
 function forAll(f,xs) {
