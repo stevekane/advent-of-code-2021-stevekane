@@ -2,6 +2,7 @@ const fs = require("fs")
 
 module.exports = { 
   readLines, log, 
+  hash, unhash,
   toNat, toSet, toArray, toGraph,
   transpose,
   cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
@@ -19,6 +20,14 @@ function readLines(path) {
 
 function log(n) {
   return console.log(n)
+}
+
+function hash(d) {
+  return JSON.stringify(d)
+}
+
+function unhash(d) {
+  return JSON.parse(d)
 }
 
 function toNat(n) {
