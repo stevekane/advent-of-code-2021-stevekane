@@ -4,9 +4,9 @@ const { max } = Math
 
 function foldPaper(dots,[axis,v]) {
   if (axis === "x") {
-    return dots.map(([i,j]) => i > v  ? [2*v-i,j] : [i,j])
+    return dots.map(([i,j]) => i > v ? [2*v-i,j] : [i,j])
   } else {
-    return dots.map(([i,j]) => j > v  ? [i,2*v-j] : [i,j])
+    return dots.map(([i,j]) => j > v ? [i,2*v-j] : [i,j])
   }
 }
 
