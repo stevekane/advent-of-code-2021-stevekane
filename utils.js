@@ -2,12 +2,13 @@ const fs = require("fs")
 
 module.exports = { 
   readLines, log, 
-  toNat, toSet, toArray,
+  toNat, toSet, toArray, toGraph,
   transpose,
   cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, mul, sub,
-  sum, product,
+  sum, product, histogram,
+  forAll, thereExists,
   fold, map, scan, range 
 }
 
@@ -30,6 +31,21 @@ function toSet(xs) {
 
 function toArray(xs) {
   return [ ...xs ]
+}
+
+function toGraph(connections) {
+  let map = new Map
+
+  for (let [a,b] of connections) {
+    let aOuts = map.get(a) || []
+    let bOuts = map.get(b) || []
+
+    aOuts.push(b)
+    bOuts.push(a)
+    map.set(a,aOuts)
+    map.set(b,bOuts)
+  }
+  return map
 }
 
 function transpose(input) {
@@ -140,6 +156,33 @@ function sum(xs) {
 
 function product(xs) {
   return fold(mul,1,xs)
+}
+
+function histogram(xs) {
+  var m = new Map
+
+  for (let x of xs) {
+    m.set(x,(m.get(x) || 0) + 1)
+  }
+  return m
+}
+
+function forAll(f,xs) {
+  for (let x of xs) {
+    if (!f(x)) {
+      return false
+    }
+  }
+  return true
+}
+
+function thereExists(f,xs) {
+  for (let x of xs) {
+    if (f(x)) {
+      return true
+    }
+  }
+  return false
 }
 
 function fold(f,y0,xs) {
