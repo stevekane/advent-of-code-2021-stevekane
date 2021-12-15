@@ -4,14 +4,15 @@ module.exports = {
   readLines, log, 
   hash, unhash,
   Array2D,
-  toNat, toSet, toArray, toGraph,
+  toNat, toSet, toMap, toArray, toGraph,
   transpose,
   cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, mul, sub,
   sum, product, histogram, uniques, count,
   forAll, thereExists,
-  fold, map, scan, range 
+  fold, map, scan, range, pairs,
+  first, last
 }
 
 function readLines(path) {
@@ -48,6 +49,10 @@ function toNat(n) {
 
 function toSet(xs) {
   return new Set(xs)
+}
+
+function toMap(pairs) {
+  return new Map(pairs)
 }
 
 function toArray(xs) {
@@ -241,4 +246,20 @@ function scan(f,xs) {
 function * range(n) {
   for (var i = 0; i < n; i++)
     yield i
+}
+
+function pairs(f,xs) {
+  let out = []
+  for (let i = 1; i < xs.length; i++) {
+    out.push(f(xs[i-1],xs[i-0]))
+  }
+  return out
+}
+
+function first(xs) {
+  return xs[0]
+}
+
+function last(xs) {
+  return xs[xs.length - 1]
 }
