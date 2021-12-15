@@ -5,14 +5,15 @@ module.exports = {
   log, 
   hash, unhash,
   Array2D,
-  toNat, toSet, toMap, toArray, toGraph,
   transpose,
-  cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
+  toNat, toSet, toMap, toArray, toGraph,
+  cartesianProduct, isSuperset, difference, 
+  symmetricDifference, union, equal,
   contains,
   add, mul, sub,
   sum, product, incrementBy, histogram, uniques, count,
   forAll, thereExists,
-  fold, map, scan, range, pairs,
+  fold, map, flatMap, filter, scan, range, pairs,
   first, last,
   ntimes
 }
@@ -48,6 +49,27 @@ function Array2D(width,height,initialValue) {
   return arr
 }
 
+function transpose(input) {
+  let width = input.length
+  let height = input[0].length
+  let output = []
+
+  // initialize the transposed array
+  for (var i = 0; i < width; i++) {
+    output.push([])
+    for (var j = 0; j < height; j++) {
+      output[i].push(0)  
+    }
+  }
+  // populate it from the input
+  for (var j = 0; j < width; j++) {
+    for (var i = 0; i < height; i++) {
+      output[i][j] = input[j][i]
+    }
+  }
+  return output
+}
+
 function toNat(n) {
   return parseInt(n)
 }
@@ -77,27 +99,6 @@ function toGraph(connections) {
     map.set(b,bOuts)
   }
   return map
-}
-
-function transpose(input) {
-  let width = input.length
-  let height = input[0].length
-  let output = []
-
-  // initialize the transposed array
-  for (var i = 0; i < width; i++) {
-    output.push([])
-    for (var j = 0; j < height; j++) {
-      output[i].push(0)  
-    }
-  }
-  // populate it from the input
-  for (var j = 0; j < width; j++) {
-    for (var i = 0; i < height; i++) {
-      output[i][j] = input[j][i]
-    }
-  }
-  return output
 }
 
 function cartesianProduct(xs,ys) {
@@ -244,6 +245,23 @@ function map(f,xs) {
     ys.push(f(x))
   }
   return ys
+}
+
+function flatMap(f,xs) {
+  let ys = []
+  for (let x of xs) {
+    let fxs = f(x)
+    ys.push(...fxs)
+  }
+  return ys
+}
+
+function * filter(p,xs) {
+  for (let x of xs) {
+    if (p(x)) {
+      yield x
+    }
+  }
 }
 
 function scan(f,xs) {
