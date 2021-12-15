@@ -1,43 +1,37 @@
-const { readFileSync } = require("fs")
-const { fold, pairs, add, toMap, last } = require("../utils")
+const { readText, incrementBy, fold, pairs, add, toMap, last, ntimes } = require("../utils")
 const { min, max } = Math
 
-function sequenceOccurrences(polymer) {
-  return fold((m,p) => { 
-    let current = m.get(p) || 0
-    return m.set(p, 1+current)
-  }, new Map, pairs(add,polymer))
+function sequenceOccurrences(p) {
+  let m0 = new Map
+  let ps = pairs(add,p)
+  return fold((os,k) => incrementBy(os,[[k,1]]),m0,ps)
 }
 
-function evolveOccurrences(prev,rules) {
-  return fold((next,[pair,count]) => {
-    let insertion = rules.get(pair)
-    let lpair = pair[0] + insertion
-    let rpair = insertion + pair[1]
-    next.set(lpair, count+(next.get(lpair) || 0))
-    next.set(rpair, count+(next.get(rpair) || 0))
-    return next
-  }, new Map, prev.entries())
+function evolveOccurrences(rs,o) {
+  let m0 = new Map
+  let o0 = o.entries()
+  return fold((o,[p,n]) => {
+    let i = rs.get(p)
+    let lp = p[0]+i
+    let rp = i+p[1]
+    return incrementBy(o,[[lp,n],[rp,n]])
+  },m0,o0)
 }
 
-function letterCounts(rightmost,occurrences) {
-  return fold((counts,[pair,count]) => {
-    let current = counts.get(pair[0]) || 0
-    counts.set(pair[0], count + current)
-    return counts
-  }, new Map([[rightmost,1]]), occurrences.entries())
+function letterCounts(c,os) {
+  let m0 = new Map([[c,1]])
+  let o0 = os.entries()
+  return fold((m,[p,n]) => incrementBy(m,[[p[0],n]]),m0,o0)
 }
 
+let inputPath = process.argv[2]
 let stepCount = process.argv[3]
-let sections = readFileSync(process.argv[2], { encoding: "utf8" }).split("\r\n\r\n")
+let sections = readText(inputPath).split("\r\n\r\n")
 let polymer = sections[0]
 let rules = toMap(sections[1].split("\r\n").map(r => r.split(" -> ")))
-let occ = sequenceOccurrences(polymer,rules)
 let rightmost = last(polymer)
-
-for (let i = 0; i < stepCount; i++) {
-  occ = evolveOccurrences(occ,rules)
-}
+let occ0 = sequenceOccurrences(polymer,rules)
+let occ = ntimes(stepCount,o => evolveOccurrences(rules,o),occ0)
 let counts = letterCounts(rightmost,occ)
 let mostFrequent = fold(max,0,counts.values())
 let leastFrequent = fold(min,Number.MAX_SAFE_INTEGER,counts.values())

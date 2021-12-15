@@ -1,7 +1,8 @@
 const fs = require("fs")
 
 module.exports = { 
-  readLines, log, 
+  readLines, readText,
+  log, 
   hash, unhash,
   Array2D,
   toNat, toSet, toMap, toArray, toGraph,
@@ -9,15 +10,19 @@ module.exports = {
   cartesianProduct, isSuperset, difference, symmetricDifference, union, equal,
   contains,
   add, mul, sub,
-  sum, product, histogram, uniques, count,
+  sum, product, incrementBy, histogram, uniques, count,
   forAll, thereExists,
   fold, map, scan, range, pairs,
-  first, last
+  first, last,
+  ntimes
+}
+
+function readText(path) {
+  return fs.readFileSync(path, { encoding:"utf8" })
 }
 
 function readLines(path) {
-  return fs.readFileSync(path, { encoding: "utf8" })
-    .split("\r\n")
+  return fs.readFileSync(path, { encoding: "utf8" }).split("\r\n")
 }
 
 function log(n) {
@@ -188,6 +193,13 @@ function product(xs) {
   return fold(mul,1,xs)
 }
 
+function incrementBy(m,updates) {
+  for (let [k,n] of updates) {
+    m.set(k, n + (m.get(k) || 0))
+  }
+  return m
+}
+
 function histogram(xs) {
   var m = new Map
 
@@ -262,4 +274,11 @@ function first(xs) {
 
 function last(xs) {
   return xs[xs.length - 1]
+}
+
+function ntimes(n,f,x) {
+  for (var i = 0; i < n; i++) {
+    x = f(x)
+  }
+  return x
 }
