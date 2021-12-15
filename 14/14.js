@@ -1,4 +1,5 @@
-const { readText, incrementBy, fold, pairs, add, toMap, last, ntimes } = require("../utils")
+const { readFileSync } = require("fs")
+const { incrementBy, fold, pairs, add, last, ntimes } = require("../utils")
 const { min, max } = Math
 
 function sequenceOccurrences(p) {
@@ -21,14 +22,14 @@ function evolveOccurrences(rs,o) {
 function letterCounts(c,os) {
   let m0 = new Map([[c,1]])
   let o0 = os.entries()
-  return fold((m,[p,n]) => incrementBy(m,[[p[0],n]]),m0,o0)
+  return fold((m,[[l],n]) => incrementBy(m,[[l,n]]),m0,o0)
 }
 
 let inputPath = process.argv[2]
 let stepCount = process.argv[3]
-let sections = readText(inputPath).split("\r\n\r\n")
+let sections = readFileSync(inputPath,{encoding:"utf8"}).split("\r\n\r\n")
 let polymer = sections[0]
-let rules = toMap(sections[1].split("\r\n").map(r => r.split(" -> ")))
+let rules = new Map(sections[1].split("\r\n").map(r => r.split(" -> ")))
 let rightmost = last(polymer)
 let occ0 = sequenceOccurrences(polymer,rules)
 let occ = ntimes(stepCount,o => evolveOccurrences(rules,o),occ0)
