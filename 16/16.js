@@ -1,6 +1,7 @@
-const { readText, flatMap, fold } = require("../utils")
+const { readText, flatMap, fold, map, add, mul, sum, product } = require("../utils")
+const { min, max } = Math
 
-function encode(hex) {
+function toBinary(hex) {
   switch (hex) {
     case '0': return "0000"
     case '1': return "0001"
@@ -120,22 +121,29 @@ function pt1SumVersions({version,subpackets}) {
   }
 }
 
-let ex1 = flatMap(encode,"D2FE28").join("")
-let ex1Packet = parsePacket(ex1)
+function pt2Normalize({typeID,literal,subpackets}) {
+  if (literal != null) {
+    return literal
+  } else {
+    switch (typeID) {
+      case 0: return sum(map(pt2Normalize,subpackets))
+      case 1: return product(map(pt2Normalize,subpackets))
+      case 2: return min(...map(pt2Normalize,subpackets))
+      case 3: return max(...map(pt2Normalize,subpackets))
+      case 5: return pt2Normalize(subpackets[0]) > pt2Normalize(subpackets[1]) ? 1 : 0
+      case 6: return pt2Normalize(subpackets[0]) < pt2Normalize(subpackets[1]) ? 1 : 0
+      case 7: return pt2Normalize(subpackets[0]) === pt2Normalize(subpackets[1]) ? 1 : 0
+    }
+  }
+}
 
-let ex2 = "00111000000000000110111101000101001010010001001000000000"
-let ex2Packet = parsePacket(ex2)
+function decode(hex) {
+  return parsePacket(flatMap(toBinary,hex).join(""))[2]
+}
 
-let ex3 = flatMap(encode,"EE00D40C823060").join("")
-let ex3Packet = parsePacket(ex3)
+let input = decode(readText(process.argv[2]))
+let pt1 = `Sum of versions is: ${pt1SumVersions(input)}`
+let pt2 = `Total value is: ${pt2Normalize(input)}`
 
-let pt1input = readText(process.argv[2])
-let pt1bitstring = flatMap(encode,pt1input).join("")
-let pt1packets = parsePacket(pt1bitstring)
-let pt1 = pt1SumVersions(pt1packets[2])
-
-console.log(ex1Packet)
-console.log(ex2Packet)
-console.log(ex3Packet)
-console.log(pt1packets)
 console.log(pt1)
+console.log(pt2)
