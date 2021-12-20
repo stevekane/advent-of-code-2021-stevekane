@@ -10,43 +10,24 @@ function cardinalNeighbors(w,h,x,y) {
   return cn
 }
 
-function mindist({w,h,cells},distances,visited,[x,y]) {
-  let unvisited = cardinalNeighbors(w,h,x,y).filter(n => !visited.has(hash(n)))
-
-  visited.add(hash([x,y]))
-  if (unvisited.length === 0) {
-    return distances
-  } else {
-    let distance = distances[x][y]
-    unvisited.forEach(([x,y]) => distances[x][y] = min(distances[x][y],distance+cells[x][y]))
-    unvisited.sort(([x,y],[i,j]) => distances[x][y]-distances[i,j])
-    return fold((dists,p) => visited.has(hash(p)) ? dists : mindist(grid,dists,visited,p),distances,unvisited)
-  }
-}
-
 // stupidly-inefficient implementation
 function dijkstra({w,h,cells},[x,y]) {
+  let stack = [[x,y]]
+  let visited = Array2D(w,h,false)
   let dist = Array2D(w,h,Infinity)
   dist[x][y] = 0
-  let stack = cartesianProduct([...range(w)],[...range(h)])
-  let visited = new Set
 
   while (stack.length) {
-    let [idx,v] = stack.reduce(([idx1,[x1,y1]],[x2,y2],idx2) => {
-      if (dist[x2][y2] < dist[x1][y1]) {
-        return [idx2,[x2,y2]]
-      } else {
-        return [idx1,[x1,y1]]
-      }
-    },[0,stack[0]])
-    let [i,j] = v
-    let d = dist[i][j]
+    let [i,j] = stack.shift()
+    let neighbors = cardinalNeighbors(w,h,i,j).filter(([ni,nj]) => !visited[ni][nj])
 
-    stack.splice(idx,1)
-    visited.add(hash(v))
-    for (let [nx,ny] of cardinalNeighbors(w,h,i,j).filter(n => !visited.has(hash(n)))) {
-      dist[nx][ny] = min(dist[nx][ny],d+cells[nx][ny])
-    }
+    if (visited[i][j])
+      continue
+
+    visited[i][j] = true
+    neighbors.forEach(([nx,ny]) => dist[nx][ny] = min(dist[nx][ny],dist[i][j]+cells[nx][ny]))
+    neighbors.sort(([x1,y1],[x2,y2]) => dist[x1][y1]-dist[x2][y2])
+    stack.push(...neighbors)
   }
   return dist
 }
@@ -58,18 +39,19 @@ function print(cells) {
 let cells = transpose(map(l => map(toNat,l), readLines(process.argv[2])))
 let w = cells.length
 let h = cells[0].length
-let bigcells = Array2D(w*5,h*5,0)
 let m = 5
+let bigcells = Array2D(w*m,h*m,0)
 for (let i = 0; i < m; i++)
 for (let j = 0; j < m; j++)
 for (let x = 0; x < w; x++)
 for (let y = 0; y < h; y++)
   bigcells[i*w+x][j*h+y] = ((cells[x][y]+i+j-1) % 9)+1
 
-let dij1 = dijkstra({w,h,cells:cells},[0,0])
-let dij2 = dijkstra({w:w*5,h:h*5,cells:bigcells},[0,0])
+let g1 = {w,h,cells}
+let g2 = {w:w*m,h:h*m,cells:bigcells}
+let dij1 = dijkstra(g1,[0,0])
+let dij2 = dijkstra(g2,[0,0])
 
-print(cells)
-print(bigcells)
 console.log(dij1[w-1][h-1])
-console.log(dij2[m*w-1][m*h-1])
+console.log(dij2[w-1][h-1])
+console.log(dij2[w*m-1][h*m-1])
