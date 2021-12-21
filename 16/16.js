@@ -44,7 +44,10 @@ function parsePacket(b) {
     case 4: {
       let [ literalBitLength, remaining, literalBits ] = parseLiteral(b.slice(6))
       let literal = parseInt(literalBits,2)
-      let bitLength = versionBitLength + typeIDBitLength + literalBitLength
+      let bitLength 
+        = versionBitLength 
+        + typeIDBitLength 
+        + literalBitLength
 
       return [ 
         bitLength, 
