@@ -1,9 +1,20 @@
 const { map } = require("../utils")
+const { floor, ceil } = Math
 
 function addSnail(a,b) {
-  return [ a, b ]  
+  let sum = [ a, b ]
+  print(sum)
+  while (explode(sum) || split(sum)) {
+    print(sum)
+  }
+  return sum
 }
 
+function isLeaf(n) {
+  return n.length == null
+}
+
+// TODO: maybe could turn this into a cute fold?
 function update(n,path,v) {
   let penultimate = path.length - 1
   for (let i = 0; i < penultimate; i++) {
@@ -12,23 +23,8 @@ function update(n,path,v) {
   n[path[penultimate]] = v
 }
 
-function explode(n) {
-  let { left, leftPath, explosionPath, exploded, right, rightPath } = explosionIndices(n)
-  if (explosionPath == null) {
-    return false
-  } else {
-    update(n,explosionPath,0)
-    if (leftPath) {
-      update(n,leftPath,exploded[0]+left)
-    }
-    if (rightPath) {
-      update(n,rightPath,exploded[1]+right)
-    }
-  }
-}
-
 function explosionIndices(n,path=[],state={}) {
-  if (n.length == null) {
+  if (isLeaf(n)) {
     if (state.explosionPath == null) {
       return { ...state, leftPath: [...path], left: n }
     } else if (state.rightPath == null) {
@@ -40,12 +36,57 @@ function explosionIndices(n,path=[],state={}) {
     if (state.explosionPath == null && path.length === 4) {
       return { ...state, explosionPath: [...path], exploded: n }
     } else {
-      let pathl = [...path,0]
-      let pathr = [...path,1]
-      let statel = explosionIndices(n[0], pathl, state)
-      let stater = explosionIndices(n[1], pathr, statel)
+      let statel = explosionIndices(n[0], [...path,0], state)
+      let stater = explosionIndices(n[1], [...path,1], statel)
       return stater
     }
+  }
+}
+
+function explode(n) {
+  let { left, leftPath, explosionPath, exploded, right, rightPath } = explosionIndices(n)
+  if (explosionPath == null) {
+    return false
+  } else {
+    update(n,explosionPath,0)
+    if (leftPath) {
+      update(n, leftPath, exploded[0]+left)
+    }
+    if (rightPath) {
+      update(n, rightPath, exploded[1]+right)
+    }
+    return true
+  }
+}
+
+function splitIndex(n,path=[],state={}) {
+  if (isLeaf(n)) {
+    if (n >= 10 && state.path == null) {
+      return { ...state, path: [...path], value:n }
+    } else {
+      return state
+    }
+  } else {
+    if (state.path == null) {
+      let statel = splitIndex(n[0], [...path,0], state)
+      let stater = splitIndex(n[1], [...path,1], statel)
+      return stater
+    } else {
+      return state
+    }
+  }
+}
+
+function split(n) {
+  let { path, value } = splitIndex(n)
+
+  console.log({path, value})
+
+  if (path == null) {
+    return false
+  } else {
+    update(n, path, [floor(value/2),ceil(value/2)])
+    return true
   }
 }
 
@@ -61,28 +102,13 @@ let ex3 = [[6,[5,[4,[3,2]]]],1]
 let ex4 = [[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]
 let ex5 = [[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]
 
-let exp1 = explosionIndices(ex1)
-let exp2 = explosionIndices(ex2)
-let exp3 = explosionIndices(ex3)
-let exp4 = explosionIndices(ex4)
-let exp5 = explosionIndices(ex5)
+let l = [[[[4,3],4],4],[7,[[8,4],9]]]
+let r = [1,1]
+let lr = addSnail(l,r)
 
-print(ex1)
-explode(ex1)
-print(ex1)
+console.log(lr)
 
-print(ex2)
-explode(ex2)
-print(ex2)
+let testsplit = [[10,5],2]
 
-print(ex3)
-explode(ex3)
-print(ex3)
-
-print(ex4)
-explode(ex4)
-print(ex4)
-
-print(ex5)
-explode(ex5)
-print(ex5)
+split(testsplit)
+console.log(testsplit)
